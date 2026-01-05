@@ -44,4 +44,4 @@ if uploaded_files:
         response = qa_chain.run(user_question)
         st.write("Answer:\n", response)
 else:
-    st.write("Please upload PDF files and provide your OpenAI API key.")
+    st.write("Please upload PDF files and provide your LLM key.")
