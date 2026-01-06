@@ -23,6 +23,8 @@ if video_url:
                 yt = YouTube(video_url)
                 captions = (
                     yt.captions.get("en")
+                    or yt.captions.get("en-US")
+                    or yt.captions.get("a.en-US")
                     or yt.captions.get("a.en")
                     or yt.captions.get("en-IN")
                     or yt.captions.get("a.en-IN")
