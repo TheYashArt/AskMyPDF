@@ -8,14 +8,29 @@ st.header("YouTube Video Summarizer")
 video_url = st.text_input("Enter YouTube Video URL", key="youtube_url_input")
 from pytubefix import YouTube
 
+preferred_codes = [
+    "en",
+    "a.en",
+    "en-IN",
+    "a.en-IN",
+    "hi",
+    "a.hi"
+]
+
 if video_url:
         with st.spinner("Loading video and extracting transcript..."):
             # Added 'en-IN' for Indian tech videos
             try:
                 yt = YouTube(video_url)
                 # This accesses the caption tracks directly from the YouTube object
-                captions = yt.captions.get('en') or yt.captions.get('a.en') or yt.captions.get('en-IN')
-                srt_text = captions.generate_srt_captions()
+                captions = None
+                for code in preferred_codes:
+                    captions = yt.captions.get(code)
+                    if captions:
+                        break
+
+                if captions:
+                    srt_text = captions.generate_srt_captions()
                 docs = [Document(page_content=srt_text)]
                 if not docs:
                     st.write("No transcript available for this video.")
