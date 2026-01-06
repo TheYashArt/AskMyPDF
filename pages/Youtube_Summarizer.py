@@ -1,6 +1,7 @@
 import streamlit as st
 from langchain_core.documents import Document
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_google_genai.llms import GoogleGenerativeAIError as ChatGoogleGenerativeAIError
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_classic.chains.summarize import load_summarize_chain # Fixed import
 
@@ -54,7 +55,10 @@ if video_url:
         
         if st.button("Summarize Video", icon ="📝"):
             with st.spinner("Generating summary..."):
-                summary = chain.run(chunks)
-                st.subheader("Video Summary")
-                st.write(summary)
+                try:
+                    summary = chain.run(chunks)
+                    st.subheader("Video Summary")
+                    st.write(summary)
+                except ChatGoogleGenerativeAIError as e:
+                    st.write("Error generating summary. Please try again later.")
         
