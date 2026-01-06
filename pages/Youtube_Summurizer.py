@@ -38,9 +38,8 @@ if video_url:
                 else:
                     text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200, length_function=len)
                     chunks = text_splitter.split_documents(docs)
-            except TypeError as e:
+            except AttributeError as e:
                 st.write("Error retrieving transcript. Please ensure the video has captions available.")
-                st.write(f"Error Details:", {e})
                 chunks = []
                 
             llm = ChatGoogleGenerativeAI(
