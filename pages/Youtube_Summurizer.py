@@ -11,16 +11,20 @@ from pytubefix import YouTube
 if video_url:
         with st.spinner("Loading video and extracting transcript..."):
             # Added 'en-IN' for Indian tech videos
-            yt = YouTube(video_url)
-            # This accesses the caption tracks directly from the YouTube object
-            captions = yt.captions.get('en') or yt.captions.get('a.en') or yt.captions.get('en-IN')
-            srt_text = captions.generate_srt_captions()
-            docs = [Document(page_content=srt_text)]
-            if not docs:
-                st.write("No transcript available for this video.")
-            else:
-                text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200, length_function=len)
-                chunks = text_splitter.split_documents(docs)
+            try:
+                yt = YouTube(video_url)
+                # This accesses the caption tracks directly from the YouTube object
+                captions = yt.captions.get('en') or yt.captions.get('a.en') or yt.captions.get('en-IN')
+                srt_text = captions.generate_srt_captions()
+                docs = [Document(page_content=srt_text)]
+                if not docs:
+                    st.write("No transcript available for this video.")
+                else:
+                    text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200, length_function=len)
+                    chunks = text_splitter.split_documents(docs)
+            except:
+                st.write("Error retrieving transcript. Please ensure the video has captions available.")
+                chunks = []
         # Move LLM setup inside the conditional to save resources
             llm = ChatGoogleGenerativeAI(
                 model="gemini-3-flash-preview",
