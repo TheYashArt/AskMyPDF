@@ -21,14 +21,15 @@ if video_url:
         with st.spinner("Loading video and extracting transcript..."):
             try:
                 yt = YouTube(video_url)
-                captions = None
-                for code in preferred_codes:
-                    captions = yt.captions.get(code)
-                    if captions:
-                        break
-
-                if captions:
-                    srt_text = captions.generate_srt_captions()
+                captions = (
+                    yt.captions.get("en")
+                    or yt.captions.get("a.en")
+                    or yt.captions.get("en-IN")
+                    or yt.captions.get("a.en-IN")
+                    or yt.captions.get("hi")
+                    or yt.captions.get("a.hi")
+                )
+                srt_text = captions.generate_srt_captions()
                 docs = [Document(page_content=srt_text)]
                 if not docs:
                     st.write("No transcript available for this video.")
