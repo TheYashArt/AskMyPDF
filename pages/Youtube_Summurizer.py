@@ -13,15 +13,15 @@ if video_url:
             # Added 'en-IN' for Indian tech videos
             yt = YouTube(video_url)
             # This accesses the caption tracks directly from the YouTube object
-            caption_track = yt.captions.get('en') or yt.captions.get('a.en') or yt.captions.get('en-IN')
-            if caption_track:
-                srt_text = caption_track.generate_srt_captions()
+            captions = yt.captions.get('en') or yt.captions.get('a.en') or yt.captions.get('en-IN')
+            srt_text = captions.generate_srt_captions()
+            docs = [Document(page_content=srt_text)]
+            if not docs:
+                st.write("No transcript available for this video.")
             else:
-                from youtube_transcript_api import YouTubeTranscriptApi
-                video_id = yt.video_id
-                transcript = YouTubeTranscriptApi.get_transcript(video_id)
-                srt_text = " ".join([t['text'] for t in transcript])
-                
+                text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200, length_function=len)
+                chunks = text_splitter.split_documents(docs)
+        # Move LLM setup inside the conditional to save resources
             llm = ChatGoogleGenerativeAI(
                 model="gemini-3-flash-preview",
                 api_key=st.secrets["GEMINI_API_KEY"],
