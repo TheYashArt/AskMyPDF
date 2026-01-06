@@ -59,6 +59,6 @@ if video_url:
                     summary = chain.run(chunks)
                     st.subheader("Video Summary")
                     st.write(summary)
-                except ChatGoogleGenerativeAIError as e:
-                    st.write("Error generating summary. Please try again later.")
+                except Exception as e:
+                    st.write("Error generating summary. Please try again later.", {e})
         
