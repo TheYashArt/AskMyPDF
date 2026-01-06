@@ -38,9 +38,9 @@ if video_url:
                 else:
                     text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200, length_function=len)
                     chunks = text_splitter.split_documents(docs)
-            except Exception as e:
+            except TypeError as e:
                 st.write("Error retrieving transcript. Please ensure the video has captions available.")
-                st.write(f"Error Detiails:", {e})
+                st.write(f"Error Details:", {e})
                 chunks = []
                 
             llm = ChatGoogleGenerativeAI(
@@ -55,7 +55,7 @@ if video_url:
         
         if st.button("Summarize Video", icon ="📝"):
             with st.spinner("Generating summary..."):
-                summary = chain.invoke(chunks)
+                summary = chain.run(chunks)
                 st.subheader("Video Summary")
-                st.write(summary['output_text'])
+                st.write(summary)
         
