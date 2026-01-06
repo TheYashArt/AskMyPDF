@@ -19,10 +19,8 @@ preferred_codes = [
 
 if video_url:
         with st.spinner("Loading video and extracting transcript..."):
-            # Added 'en-IN' for Indian tech videos
             try:
                 yt = YouTube(video_url)
-                # This accesses the caption tracks directly from the YouTube object
                 captions = None
                 for code in preferred_codes:
                     captions = yt.captions.get(code)
@@ -41,7 +39,7 @@ if video_url:
                 st.write("Error retrieving transcript. Please ensure the video has captions available.")
                 st.write(f"Error Detiails:", {e})
                 chunks = []
-        # Move LLM setup inside the conditional to save resources
+                
             llm = ChatGoogleGenerativeAI(
                 model="gemini-3-flash-preview",
                 api_key=st.secrets["GEMINI_API_KEY"],
