@@ -35,7 +35,7 @@ if video_url:
             )
             chain = load_summarize_chain(llm, chain_type="stuff")
         
-        if st.button("Summarize Video"):
+        if st.button("Summarize Video", icon ="📝"):
             with st.spinner("Generating summary..."):
                 summary = chain.invoke(chunks)
                 st.subheader("Video Summary")
