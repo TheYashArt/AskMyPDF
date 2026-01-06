@@ -7,5 +7,5 @@ langchain-text-splitters
 pypdf
 faiss-cpu
 sentence-transformers
-pytube
+pytubefix
 langchain-google-genai
