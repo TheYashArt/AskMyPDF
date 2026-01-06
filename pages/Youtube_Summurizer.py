@@ -16,7 +16,7 @@ preferred_codes = [
     "hi",
     "a.hi"
 ]
-srt_text = ""
+srt_text = None
 if video_url:
         with st.spinner("Loading video and extracting transcript..."):
             try:
