@@ -45,28 +45,28 @@ if uploaded_files:
         if st.button("Summurize Document", icon="📝"):
             summurize = "Provide a concise summary of the document."
             user_question = summurize
-            response = qa_chain.run(summurize)
+            response = qa_chain.invoke(summurize)
             
     with col2:
         if st.button("Generate Questions", icon="❓"):
             questions = "Generate five insightful questions based on the document content."
             user_question = questions
-            response = qa_chain.run(questions)
+            response = qa_chain.invoke(questions)
     with col3:
         if st.button("Key Takeaways", icon="📌"):
             takeaways = "List the key takeaways from the document."
             user_question = takeaways
-            response = qa_chain.run(takeaways) 
+            response = qa_chain.invoke(takeaways) 
     with st.expander("Ask your own question"):
         user_question = st.text_input("Enter your question about the document:")
         if st.button("Get Answer", icon="💡"):
             if user_question:
-                response = qa_chain.run(user_question)
+                response = qa_chain.invoke(user_question)
     
             
     # Ask a question about the document
 
     if response:
-        st.write("Response:\n", response)
+        st.write("Response:\n", response['output_text'])
 else:
     st.write("Please Upload PDF File")
