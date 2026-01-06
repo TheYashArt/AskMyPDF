@@ -12,7 +12,6 @@ if video_url:
         with st.spinner("Loading video and extracting transcript..."):
             # Added 'en-IN' for Indian tech videos
             yt = YouTube(video_url)
-            yt.bypass_age_gate()
             # This accesses the caption tracks directly from the YouTube object
             caption_track = yt.captions.get('en') or yt.captions.get('a.en') or yt.captions.get('en-IN')
             if caption_track:
