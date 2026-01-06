@@ -1,10 +1,7 @@
 import streamlit as st
-import os
-
 from langchain_core.documents import Document
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_groq import ChatGroq
 from langchain_classic.chains.summarize import load_summarize_chain # Fixed import
 
 st.header("YouTube Video Summarizer")
@@ -22,7 +19,7 @@ if video_url:
             if not docs:
                 st.write("No transcript available for this video.")
             else:
-                text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
+                text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200, length_function=len)
                 chunks = text_splitter.split_documents(docs)
         # Move LLM setup inside the conditional to save resources
             llm = ChatGoogleGenerativeAI(
@@ -30,7 +27,7 @@ if video_url:
                 api_key=st.secrets["GEMINI_API_KEY"],
                 temperature=0,
                 max_tokens=None,
-                Timeout=None,
+                timeout=None,
                 max_retries=3
             )
             chain = load_summarize_chain(llm, chain_type="stuff")
