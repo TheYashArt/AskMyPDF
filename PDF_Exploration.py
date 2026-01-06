@@ -9,7 +9,7 @@ from langchain_classic.chains import RetrievalQA
 import os
 
 
-st.header("Document Exploration with Groq LLM")
+st.header("Document Exploration with PDF Uploads")
 st.text("Upload PDF files and ask questions about their content.")    
 uploaded_files = st.file_uploader("Upload PDF files", type="pdf")
 

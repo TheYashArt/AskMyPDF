@@ -7,7 +7,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_groq import ChatGroq
 from langchain_classic.chains.summarize import load_summarize_chain # Fixed import
 
-st.header("YouTube Video Summarizer with Groq LLM")
+st.header("YouTube Video Summarizer")
 video_url = st.text_input("Enter YouTube Video URL", key="youtube_url_input")
 from pytubefix import YouTube
 
