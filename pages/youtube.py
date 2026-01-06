@@ -20,7 +20,7 @@ if video_url:
             srt_text = captions.generate_srt_captions()
             docs = [Document(page_content=srt_text)]
             if not docs:
-                st.error("No transcript found. This video might have captions disabled or restricted.")
+                st.write("No transcript available for this video.")
             else:
                 text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
                 chunks = text_splitter.split_documents(docs)
