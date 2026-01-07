@@ -2,6 +2,7 @@ import os
 import streamlit as st
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -30,8 +31,8 @@ if uploaded_files:
 
     
     # Initialize the language model
-    llm = ChatGroq(
-            model = "llama-3.1-8b-instant",
+    llm = ChatGoogleGenerativeAI(
+            model = "gemini-2.5-flash-lite",
             api_key = st.secrets["GROQ_API_KEY"],
             temperature=0
         )
