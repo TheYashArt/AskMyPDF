@@ -59,5 +59,5 @@ if video_url:
                     st.subheader("Video Summary")
                     st.write(summary)
                 except Exception as e:
-                    st.write("Error generating summary. Please try again later.", {e})
+                    st.write("Error generating summary. Please try again later.")
         
