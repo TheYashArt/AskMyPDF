@@ -18,46 +18,46 @@ preferred_codes = [
 ]
 srt_text = None
 if video_url:
-        with st.spinner("Loading video and extracting transcript..."):
-            try:
-                yt = YouTube(video_url)
-                captions = (
-                    yt.captions.get("en")
-                    or yt.captions.get("en-US")
-                    or yt.captions.get("a.en-US")
-                    or yt.captions.get("a.en")
-                    or yt.captions.get("en-IN")
-                    or yt.captions.get("a.en-IN")
-                    or yt.captions.get("hi")
-                    or yt.captions.get("a.hi")
-                )
-                srt_text = captions.generate_srt_captions()
-                docs = [Document(page_content=srt_text)]
-                if not docs:
-                    st.write("No transcript available for this video.")
-                else:
-                    text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200, length_function=len)
-                    chunks = text_splitter.split_documents(docs)
-            except AttributeError as e:
-                st.write("Error retrieving transcript. Please ensure the video has captions available.")
-                chunks = []
-                
-            llm = ChatGoogleGenerativeAI(
-                model="gemini-3-flash-preview",
-                api_key=st.secrets["GEMINI_API_KEY"],
-                temperature=0,
-                max_tokens=None,
-                timeout=None,
-                max_retries=3
+    with st.spinner("Loading video and extracting transcript..."):
+        try:
+            yt = YouTube(video_url)
+            captions = (
+                yt.captions.get("en")
+                or yt.captions.get("en-US")
+                or yt.captions.get("a.en-US")
+                or yt.captions.get("a.en")
+                or yt.captions.get("en-IN")
+                or yt.captions.get("a.en-IN")
+                or yt.captions.get("hi")
+                or yt.captions.get("a.hi")
             )
-            chain = load_summarize_chain(llm, chain_type="stuff")
-        
-        if st.button("Summarize Video", icon ="📝"):
-            with st.spinner("Generating summary..."):
-                try:
-                    summary = chain.run(chunks)
-                    st.subheader("Video Summary")
-                    st.write(summary)
-                except Exception as e:
-                    st.write("Error generating summary. Please try again later.")
+            srt_text = captions.generate_srt_captions()
+            docs = [Document(page_content=srt_text)]
+            if not docs:
+                st.write("No transcript available for this video.")
+            else:
+                text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200, length_function=len)
+                chunks = text_splitter.split_documents(docs)
+        except AttributeError as e:
+            st.write("Error retrieving transcript. Please ensure the video has captions available.")
+            chunks = []
+            
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-3-flash-preview",
+            api_key=st.secrets["GEMINI_API_KEY"],
+            temperature=0,
+            max_tokens=None,
+            timeout=None,
+            max_retries=3
+        )
+        chain = load_summarize_chain(llm, chain_type="stuff")
+    
+if st.button("Summarize Video", icon ="📝"):
+    with st.spinner("Generating summary..."):
+        try:
+            summary = chain.run(chunks)
+            st.subheader("Video Summary")
+            st.write(summary)
+        except Exception as e:
+            st.write("Error generating summary. Please try again later.")
         
