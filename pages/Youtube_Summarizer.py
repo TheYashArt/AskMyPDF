@@ -43,7 +43,7 @@ if video_url:
             chunks = []
             
         llm = ChatGoogleGenerativeAI(
-            model="gemini-3-flash-preview",
+            model="gemini-2.5-flash-native-audio-dialog",
             api_key=st.secrets["GEMINI_API_KEY"],
             temperature=0,
             max_tokens=None,
