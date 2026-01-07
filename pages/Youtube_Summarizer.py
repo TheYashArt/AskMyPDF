@@ -60,4 +60,5 @@ if st.button("Summarize Video", icon ="📝"):
             st.write(summary)
         except Exception as e:
             st.write("Error generating summary. Please try again later.")
+            print(e)
         
