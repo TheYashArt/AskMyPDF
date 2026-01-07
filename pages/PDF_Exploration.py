@@ -33,7 +33,7 @@ if uploaded_files:
     # Initialize the language model
     llm = ChatGoogleGenerativeAI(
             model = "gemini-2.5-flash-lite",
-            api_key = st.secrets["GROQ_API_KEY"],
+            api_key = st.secrets["GOOGLE_API_KEY"],
             temperature=0
         )
     response = None
