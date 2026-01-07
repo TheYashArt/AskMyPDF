@@ -43,7 +43,7 @@ if video_url:
             chunks = []
             
         llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash-native-audio-dialog",
+            model="gemini-robotics-er-1.5-preview",
             api_key=st.secrets["GEMINI_API_KEY"],
             temperature=0,
             max_tokens=None,
@@ -59,6 +59,5 @@ if st.button("Summarize Video", icon ="📝"):
             st.subheader("Video Summary")
             st.write(summary)
         except Exception as e:
-            st.write("Error generating summary. Please try again later.", {"error": str(e)})
-            print(e)
+            st.write("Error generating summary. Please try again later.")
         
