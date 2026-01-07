@@ -51,13 +51,15 @@ if video_url:
             max_retries=3
         )
         chain = load_summarize_chain(llm, chain_type="stuff")
-    
+   
 if st.button("Summarize Video", icon ="📝"):
-    with st.spinner("Generating summary..."):
-        try:
-            summary = chain.run(chunks)
-            st.subheader("Video Summary")
-            st.write(summary)
-        except Exception as e:
-            st.write("Error generating summary. Please try again later.")
-        
+    if video_url and srt_text:
+        with st.spinner("Generating summary..."):
+            try:
+                summary = chain.run(chunks)
+                st.subheader("Video Summary")
+                st.write(summary)
+            except Exception as e:
+                st.write("Error generating summary. Please try again later.")
+    else:
+        st.write("Please enter a valid YouTube video URL with available captions.")
