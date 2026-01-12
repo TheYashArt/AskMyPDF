@@ -1,10 +1,13 @@
 import streamlit as st
 import os
 import json
+import hashlib
+import pickle
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.vectorstores import FAISS
+from langchain_ollama import ChatOllama
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
 from langchain_core.chat_history import InMemoryChatMessageHistory
@@ -19,6 +22,12 @@ if "history_store" not in st.session_state:
         # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+VECTOR_DB_DIR = "vector_db"
+
+os.makedirs(VECTOR_DB_DIR, exist_ok=True)
+def get_pdf_hash(file_bytes):
+    return hashlib.md5(file_bytes).hexdigest()
 
 def format_docs(docs):
     return "\n\n".join(d.page_content for d in docs)
@@ -145,14 +154,24 @@ if uploaded_files:
         f.write(uploaded_files.getbuffer())
     
     # Load the PDF document
-    loader = PyPDFLoader("temp.pdf")
-    data = loader.load()
+    
 
-    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-    chunks = splitter.split_documents(data)
+    
+    file_bytes = uploaded_files.getbuffer()
+    file_hash = get_pdf_hash(file_bytes)
+    vector_db_path = os.path.join(VECTOR_DB_DIR, f"{file_hash}.faiss")
 
     embeddings = HuggingFaceEmbeddings(model="sentence-transformers/all-MiniLM-L6-v2")
-    vectorstore = FAISS.from_documents(chunks, embeddings)
+
+    if os.path.exists(vector_db_path):
+        vectorstore = FAISS.load_local(vector_db_path, embeddings, allow_dangerous_deserialization=True)
+    else:
+        loader = PyPDFLoader("temp.pdf")
+        data = loader.load()
+        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        chunks = splitter.split_documents(data)
+        vectorstore = FAISS.from_documents(chunks, embeddings)
+        vectorstore.save_local(vector_db_path)
     
     with col1:
         if st.button("Summarize Document", icon="📝"):
@@ -170,6 +189,12 @@ if uploaded_files:
         model = "llama-3.1-8b-instant",
         api_key = st.secrets["GROQ_API_KEY"],
         temperature=0
+    )
+
+    llama = ChatOllama(
+        model = "llama3.1:8b",
+        temperature=0,
+        verbose=True
     )
     # Display chat messages from history on app rerun
     for msg in st.session_state.messages:
@@ -195,7 +220,7 @@ if uploaded_files:
                 "context": RunnableLambda(lambda x: build_full_context(session_id, x["question"])),
             } |
             prompt_chat |
-            llm
+            llama
         )
         rag_with_history = RunnableWithMessageHistory(
             rag_chain,
