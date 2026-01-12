@@ -351,8 +351,8 @@ if uploaded_files:
     # ====================================================================
     # Display all previous messages from current session
     for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
-            st.markdown(msg["content"]) 
+            with st.chat_message(msg["role"]):
+                st.markdown(msg["content"]) 
 
 
     # ====================================================================
@@ -406,7 +406,7 @@ if uploaded_files:
             st.session_state.messages.append({"role": "assistant", "content": response.content})
             save_chat_history(session_id, "assistant", response.content)
             st.rerun()
-
+    
 # Display message when no PDF is uploaded
 else:
     st.write("Please Upload PDF File")
