@@ -11,9 +11,9 @@ import streamlit as st
 import os
 import json
 import hashlib
+from langchain_chroma import Chroma
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
 from langchain_ollama import ChatOllama
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
@@ -37,7 +37,7 @@ if "messages" not in st.session_state:
 # ============================================================================
 # CONSTANTS
 # ============================================================================
-# Directory path for storing FAISS vector databases
+# Directory path for storing Chroma vector databases
 VECTOR_DB_DIR = "vector_db"
 
 # Create vector database directory if it doesn't exist
@@ -110,7 +110,6 @@ def session_initialization(chats, session_id):
     }
     chats.append(new_session)
     return new_session
-
 
 # ============================================================================
 # SESSION INITIALIZATION
@@ -194,7 +193,6 @@ def load_chats_as_string(session_id, last_n=3):
         role = "User" if msg["role"] == "user" else "AI"
         chat_str += f"{role}: {msg['content']}\n"
     return chat_str
-
 
 def to_langchain_messages(messages):
     """
@@ -287,15 +285,15 @@ if uploaded_files:
     # Generate hash of PDF content for vector store caching
     file_bytes = uploaded_files.getbuffer()
     file_hash = get_pdf_hash(file_bytes)
-    vector_db_path = os.path.join(VECTOR_DB_DIR, f"{file_hash}.faiss")
+    vector_db_path = os.path.join(VECTOR_DB_DIR, f"{file_hash}_chroma")
 
     # Initialize embeddings model for vectorization
     embeddings = HuggingFaceEmbeddings(model="sentence-transformers/all-MiniLM-L6-v2")
 
     # Load cached vector store if it exists, otherwise create new one
     if os.path.exists(vector_db_path):
-        # Use cached embeddings for performance
-        vectorstore = FAISS.load_local(vector_db_path, embeddings, allow_dangerous_deserialization=True)
+        # Use cached embeddings from SQLite-backed Chroma
+        vectorstore = Chroma(persist_directory=vector_db_path, embedding_function=embeddings)
     else:
         # Process new PDF: load, split, embed, and store
         loader = PyPDFLoader("temp.pdf")
@@ -305,11 +303,12 @@ if uploaded_files:
         splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         chunks = splitter.split_documents(data)
         
-        # Create vector store from document chunks
-        vectorstore = FAISS.from_documents(chunks, embeddings)
-        
-        # Cache the vector store for future use
-        vectorstore.save_local(vector_db_path)
+        # Create vector store from document chunks and persist to disk
+        vectorstore = Chroma.from_documents(
+            documents=chunks,
+            embedding=embeddings,
+            persist_directory=vector_db_path
+        )
     
     # ====================================================================
     # QUICK ACTION BUTTONS
