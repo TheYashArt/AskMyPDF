@@ -9,6 +9,7 @@ chromadb
 langchain-chroma
 sentence-transformers
 pytubefix
+langchain_ollama
 langchain-google-genai
 accelerate>=0.26.0 
 torch>=2.2.0
